@@ -1,0 +1,9 @@
+{
+  "name": "rocketgoal-portal",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'No build step required for static HTML'"
+  }
+}
