@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayush Game Hub</title>
+    <title>Ayush Game Hub | Portal</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +12,7 @@
             font-family: system-ui, -apple-system, sans-serif;
         }
         body {
-            background-color: #0f172a;
+            background-color: #090d16;
             color: #f8fafc;
             height: 100vh;
             display: flex;
@@ -20,33 +20,51 @@
             overflow: hidden;
         }
         header {
-            background: #1e293b;
+            background: #111827;
             padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #1f2937;
             z-index: 10;
         }
         h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.15rem;
+            font-weight: 700;
             color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .status {
-            font-size: 0.875rem;
-            color: #4ade80;
-            background: #0f172a;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            border: 1px solid #334155;
+        .nav-actions {
+            display: flex;
+            gap: 10px;
         }
-        .game-wrapper {
+        button {
+            background: #1f2937;
+            color: #f8fafc;
+            border: 1px solid #374151;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #374151;
+            border-color: #4b5563;
+        }
+        button.active {
+            background: #0284c7;
+            border-color: #38bdf8;
+        }
+        .viewport {
             flex: 1;
             width: 100%;
-            height: calc(100vh - 57px);
-            background: #020617;
+            height: calc(100vh - 53px);
             position: relative;
+            background: #000;
         }
         iframe {
             width: 100%;
@@ -54,18 +72,86 @@
             border: none;
             display: block;
         }
+        .fallback-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .fallback-screen h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #38bdf8;
+        }
+        .fallback-screen p {
+            color: #94a3b8;
+            max-width: 450px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Ayush Game Hub</h1>
-        <div class="status">🟢 Secure Edge Proxy Active</div>
+        <h1><span>🚀</span> Ayush Game Hub</h1>
+        <div class="nav-actions">
+            <button id="btnMain" class="active" onclick="switchMode('iframe')">Official Node</button>
+            <button id="btnFallback" onclick="switchMode('local')">Stealth Arena</button>
+            <button onclick="toggleFullscreen()">Fullscreen</button>
+        </div>
     </header>
 
-    <div class="game-wrapper">
-        <iframe src="https://rocketgoal.io" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
+    <div class="viewport">
+        <!-- Official Game Frame -->
+        <iframe id="gameFrame" src="https://rocketgoal.io" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
+
+        <!-- Stealth Local Fallback if Blocked -->
+        <div id="localFallback" class="fallback-screen">
+            <h2>Stealth Arcade Mode</h2>
+            <p>If network filters block the primary external connection, use this built-in node to play instantly without restrictions.</p>
+            <button onclick="switchMode('iframe')" style="background: #0284c7; border: none; padding: 10px 20px; font-weight: bold;">Retry Official Node</button>
+        </div>
     </div>
 
+    <script>
+        function switchMode(mode) {
+            const iframe = document.getElementById('gameFrame');
+            const fallback = document.getElementById('localFallback');
+            const btnMain = document.getElementById('btnMain');
+            const btnFallback = document.getElementById('btnFallback');
+
+            if (mode === 'iframe') {
+                iframe.style.display = 'block';
+                fallback.style.display = 'none';
+                btnMain.classList.add('active');
+                btnFallback.classList.remove('active');
+            } else {
+                iframe.style.display = 'none';
+                fallback.style.display = 'flex';
+                btnFallback.classList.add('active');
+                btnMain.classList.remove('active');
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
 </body>
 </html>
