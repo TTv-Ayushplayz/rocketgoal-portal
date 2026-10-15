@@ -234,4 +234,38 @@
             
             ctx.setLineDash([8, 8]);
             ctx.beginPath();
-            ctx.
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, canvas.height / 2 - 70, 10, 140);
+            ctx.fillRect(canvas.width - 10, canvas.height / 2 - 70, 10, 140);
+
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+
+            ctx.fillStyle = aiCar.color;
+            ctx.fillRect(aiCar.x, aiCar.y, aiCar.width, aiCar.height);
+
+            ctx.fillStyle = ball.color;
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>
