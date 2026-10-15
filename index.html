@@ -30,27 +30,39 @@
         h1 {
             font-size: 1.25rem;
             font-weight: 600;
-            letter-spacing: -0.025em;
             color: #38bdf8;
         }
         .status {
             font-size: 0.875rem;
-            color: #94a3b8;
+            color: #4ade80;
             background: #0f172a;
             padding: 4px 12px;
             border-radius: 9999px;
             border: 1px solid #334155;
         }
-        .game-container {
+        .arena-container {
             flex: 1;
-            width: 100%;
-            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
             position: relative;
         }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        canvas {
+            background: #020617;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
+        }
+        .controls-hint {
+            position: absolute;
+            bottom: 16px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid #334155;
         }
     </style>
 </head>
@@ -58,13 +70,107 @@
 
     <header>
         <h1>Ayush Game Hub</h1>
-        <div class="status">🟢 Secure Edge Proxy Active</div>
+        <div class="status">🟢 Local Edge Node Active</div>
     </header>
 
-    <div class="game-container">
-        <!-- Embedded target masked within your custom frame -->
-        <iframe src="https://rocketgoal.io" allowfullscreen></iframe>
+    <div class="arena-container">
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
+        <div class="controls-hint">Use <b>W / S</b> or <b>Arrow Keys</b> to Move &amp; Score!</div>
     </div>
 
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let car = { x: 100, y: 200, width: 40, height: 20, speed: 5, color: '#38bdf8' };
+        let ball = { x: 400, y: 225, radius: 12, dx: 4, dy: 3, color: '#f43f5e' };
+        let score = { player: 0, ai: 0 };
+
+        let keys = {};
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
+
+        function update() {
+            // Movement
+            if ((keys['ArrowUp'] || keys['w'] || keys['W']) && car.y > 10) car.y -= car.speed;
+            if ((keys['ArrowDown'] || keys['s'] || keys['S']) && car.y < canvas.height - car.height - 10) car.y += car.speed;
+
+            // Ball physics
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Wall collisions (top/bottom)
+            if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.dy *= -1;
+
+            // Car collision
+            if (ball.x - ball.radius < car.x + car.width &&
+                ball.y > car.y && ball.y < car.y + car.height &&
+                ball.x > car.x) {
+                ball.dx *= -1.05;
+                ball.dx = Math.max(Math.min(ball.dx, 10), -10);
+            }
+
+            // Goal scoring
+            if (ball.x < 0) {
+                score.ai++;
+                resetBall();
+            } else if (ball.x > canvas.width) {
+                score.player++;
+                resetBall();
+            }
+
+            // Goal walls / bounds
+            if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+                if (ball.y < canvas.height / 3 || ball.y > (canvas.height / 3) * 2) {
+                    // Goal!
+                }
+            }
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = (Math.random() > 0.5 ? 1 : -1) * 4;
+            ball.dy = (Math.random() - 0.5) * 4;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Center line & goal outlines
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Score
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 24px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText(score.player + ' - ' + score.ai, canvas.width / 2, 40);
+
+            // Draw Car
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+
+            // Draw Ball
+            ctx.fillStyle = ball.color;
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
 </body>
 </html>
