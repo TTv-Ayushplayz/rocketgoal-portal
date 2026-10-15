@@ -83,20 +83,31 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
             padding: 20px;
         }
-        .fallback-screen h2 {
-            font-size: 1.5rem;
+        .scoreboard {
+            font-size: 1.25rem;
+            font-weight: 800;
             margin-bottom: 10px;
-            color: #38bdf8;
+            color: #f8fafc;
+            letter-spacing: 2px;
         }
-        .fallback-screen p {
+        canvas {
+            background: #030712;
+            border: 3px solid #374151;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            max-width: 90vw;
+            max-height: 68vh;
+        }
+        .controls-hint {
+            margin-top: 10px;
+            font-size: 0.8rem;
             color: #94a3b8;
-            max-width: 450px;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #334155;
         }
     </style>
 </head>
@@ -112,14 +123,14 @@
     </header>
 
     <div class="viewport">
-        <!-- Official Game Frame -->
+        <!-- Official Game Frame (Blocked at school) -->
         <iframe id="gameFrame" src="https://rocketgoal.io" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
 
-        <!-- Stealth Local Fallback if Blocked -->
+        <!-- Playable Stealth Arcade Arena (Unblocked local game) -->
         <div id="localFallback" class="fallback-screen">
-            <h2>Stealth Arcade Mode</h2>
-            <p>If network filters block the primary external connection, use this built-in node to play instantly without restrictions.</p>
-            <button onclick="switchMode('iframe')" style="background: #0284c7; border: none; padding: 10px 20px; font-weight: bold;">Retry Official Node</button>
+            <div class="scoreboard" id="scoreboard">BLUE 0 - 0 RED</div>
+            <canvas id="gameCanvas" width="900" height="500"></canvas>
+            <div class="controls-hint">Use <b>W / S</b> or <b>▲ / ▼</b> to Drive &amp; Defend!</div>
         </div>
     </div>
 
@@ -152,6 +163,75 @@
                 }
             }
         }
-    </script>
-</body>
-</html>
+
+        // Stealth Arena Game Engine
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let car = { x: 100, y: 225, width: 45, height: 24, speed: 6, color: '#38bdf8' };
+        let aiCar = { x: 755, y: 225, width: 45, height: 24, speed: 4.5, color: '#f43f5e' };
+        let ball = { x: 450, y: 250, radius: 14, dx: 5, dy: 3, color: '#fbbf24' };
+        let score = { player: 0, ai: 0 };
+        let keys = {};
+
+        window.addEventListener('keydown', e => {
+            keys[e.key] = true;
+            if(['ArrowUp','ArrowDown',' '].includes(e.key)) e.preventDefault();
+        });
+        window.addEventListener('keyup', e => keys[e.key] = false);
+
+        function update() {
+            if ((keys['ArrowUp'] || keys['w'] || keys['W']) && car.y > 10) car.y -= car.speed;
+            if ((keys['ArrowDown'] || keys['s'] || keys['S']) && car.y < canvas.height - car.height - 10) car.y += car.speed;
+
+            if (aiCar.y + aiCar.height / 2 < ball.y && aiCar.y < canvas.height - aiCar.height - 10) aiCar.y += aiCar.speed;
+            if (aiCar.y + aiCar.height / 2 > ball.y && aiCar.y > 10) aiCar.y -= aiCar.speed;
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.dy *= -1;
+
+            if (ball.x - ball.radius < car.x + car.width && ball.y > car.y && ball.y < car.y + car.height && ball.x > car.x) {
+                ball.dx = Math.abs(ball.dx) * 1.05;
+                ball.dy += (Math.random() - 0.5) * 2;
+            }
+
+            if (ball.x + ball.radius > aiCar.x && ball.y > aiCar.y && ball.y < aiCar.y + aiCar.height && ball.x < aiCar.x + aiCar.width) {
+                ball.dx = -Math.abs(ball.dx) * 1.05;
+                ball.dy += (Math.random() - 0.5) * 2;
+            }
+
+            ball.dx = Math.max(Math.min(ball.dx, 12), -12);
+            ball.dy = Math.max(Math.min(ball.dy, 10), -10);
+
+            if (ball.x < 0) {
+                score.ai++;
+                updateScoreboard();
+                resetBall(-1);
+            } else if (ball.x > canvas.width) {
+                score.player++;
+                updateScoreboard();
+                resetBall(1);
+            }
+        }
+
+        function resetBall(dir) {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = dir * 5;
+            ball.dy = (Math.random() - 0.5) * 4;
+        }
+
+        function updateScoreboard() {
+            document.getElementById('scoreboard').innerText = `BLUE ${score.player} - ${score.ai} RED`;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 4;
+            
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            ctx.
