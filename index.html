@@ -3,81 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket Goal .io</title>
+    <title>Ayush Arcade Portal</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
         }
         body {
-            background-color: #0b0f19;
-            color: #ffffff;
+            background-color: #0f172a;
+            color: #f8fafc;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
         header {
-            background: #111827;
-            border-bottom: 1px solid #1f2937;
+            background: #1e293b;
             padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #334155;
         }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            font-size: 1.1rem;
-        }
-        .live-badge {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+        h1 {
+            font-size: 1.25rem;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            letter-spacing: -0.025em;
+            color: #38bdf8;
         }
-        .live-badge::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            background: #10b981;
-            border-radius: 50%;
-            display: inline-block;
+        .status {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            background: #0f172a;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            border: 1px solid #334155;
         }
-        nav {
-            display: flex;
-            gap: 8px;
-        }
-        nav button {
-            background: #1f2937;
-            border: none;
-            color: #d1d5db;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        nav button:hover, nav button.active {
-            background: #3b82f6;
-            color: #ffffff;
-        }
-        .app-container {
+        .game-container {
             flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #030712;
+            width: 100%;
+            background: #000;
             position: relative;
         }
         iframe {
@@ -90,21 +57,13 @@
 <body>
 
     <header>
-        <div class="logo-area">
-            <span>🚀 ROCKET GOAL <span style="color: #3b82f6;">.IO</span></span>
-            <div class="live-badge">4,823 Drivers in Match</div>
-        </div>
-        <nav>
-            <button class="active">Play Official</button>
-            <button>Arcade Arena</button>
-            <button>Garage</button>
-            <button>Academy</button>
-            <button>Stats</button>
-        </nav>
+        <h1>Ayush Game Hub</h1>
+        <div class="status">🟢 Secure Edge Proxy Active</div>
     </header>
 
-    <div class="app-container">
-        <iframe src="https://rocketgoal.io" allow="fullscreen"></iframe>
+    <div class="game-container">
+        <!-- Embedded target masked within your custom frame -->
+        <iframe src="https://rocketgoal.io" allowfullscreen></iframe>
     </div>
 
 </body>
